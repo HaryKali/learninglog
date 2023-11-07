@@ -79,5 +79,14 @@ def delete_entry(request, entry_id):
         return HttpResponseRedirect(reverse("topic", args=[topic.id]))
 
 def delete_topic(request,topic_id):
-    #TODO：删除标题
-    pass
+    topic=get_object_or_404(Topic,pk=topic_id)
+    if request.method == "POST":
+        entries=Entry.objects.filter(topic_id=topic_id)
+        for entry in entries:
+            print(entry.topic_id)
+            entry.topic_id=get_object_or_404(Topic,text="未分类").id
+            entry.save()
+            print(entry.topic_id)
+        topic.delete()
+        return HttpResponseRedirect(reverse(viewname="topics"))
+

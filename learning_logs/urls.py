@@ -10,4 +10,6 @@ urlpatterns=[
         name='edit_entry'),
     url(r'^delete_entry/(?P<entry_id>\d+)/$', views.delete_entry,
         name='delete_entry'),
+    url(r'^delete_topic/(?P<topic_id>\d+)/$', views.delete_topic,
+        name='delete_topic'),
 ]

@@ -12,6 +12,6 @@ class Topic(models.Model):
 
 class Entry(models.Model):
     #TODO:添加小标题
-    topic=models.ForeignKey(Topic,on_delete=models.CASCADE)
+    topic=models.ForeignKey(Topic,null=True,on_delete=models.SET_NULL)
     text=models.TextField()
     date_added=models.DateTimeField(auto_now=True)
