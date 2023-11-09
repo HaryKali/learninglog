@@ -12,7 +12,7 @@
                 <!-- 添加删除按钮 -->
                 <form method="post" action="{% url 'delete_entry' entry.id %}" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit">删除</button>
+                    <button type="submit">Delete</button>
                 </form>
             </li>
         {% empty %}

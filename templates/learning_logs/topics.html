@@ -8,8 +8,13 @@
         <a href="{% url 'topic' topic.id %}">{{ topic }}</a>
        <form method="post" action="{% url 'delete_topic' topic.id %}" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit">删除</button>
+                    <button type="submit">delete</button>
         </form>
+        <form method="post" action="{% url 'edit_topic' topic.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">修改</button>
+        </form>
+
     </li>      {% empty %}
   <li>No topics have been added yet.</li>
      {% endfor %}

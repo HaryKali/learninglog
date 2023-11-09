@@ -71,22 +71,41 @@ def edit_entry(request,entry_id):
     context={"entry":entry,"topic":topic,"form":form}
     return render(request, "learning_logs/edit_entry.html", context)
 
+@login_required
+def edit_topic(request,topic_id):
+    topic=Topic.objects.get(id=topic_id)
+    # entries=Entry.objects.filter(topic_id==topic_id)
+    if topic.owner != request.user:
+        raise Http404
+    if request.method!="POST":
+        form=TopicForm(instance=topic)
+    else:
+        form=TopicForm(instance=topic,data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("topics"))
+    context={"topic":topic,"form":form}
+    return render(request, "learning_logs/edit_topic.html", context)
+
+@login_required
 def delete_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
     topic=entry.topic
     if request.method == 'POST':
         entry.delete()
         return HttpResponseRedirect(reverse("topic", args=[topic.id]))
-
+@login_required
 def delete_topic(request,topic_id):
     topic=get_object_or_404(Topic,pk=topic_id)
     if request.method == "POST":
         entries=Entry.objects.filter(topic_id=topic_id)
+        #删除Topic后默认将用户的信息放置与未分类一段
+        if Topic.objects.filter(text="未分类").exists()==False:
+            un_ca=Topic.objects.create(text="未分类",owner=topic.owner,owner_id=topic.owner_id)
+            un_ca.save()
         for entry in entries:
-            print(entry.topic_id)
             entry.topic_id=get_object_or_404(Topic,text="未分类").id
             entry.save()
-            print(entry.topic_id)
         topic.delete()
         return HttpResponseRedirect(reverse(viewname="topics"))
 
