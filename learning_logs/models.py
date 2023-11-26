@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from mdeditor.fields import MDTextField
 
 # Create your models here.
 class Topic(models.Model):
@@ -11,7 +12,12 @@ class Topic(models.Model):
         return self.text
 
 class Entry(models.Model):
-    #TODO:添加小标题
+    title=models.CharField(max_length=20)
     topic=models.ForeignKey(Topic,null=True,on_delete=models.SET_NULL)
     text=models.TextField()
+    date_added=models.DateTimeField(auto_now=True)
+class Entry_md(models.Model):
+    title=models.CharField(max_length=20)
+    topic=models.ForeignKey(Topic,null=True,on_delete=models.SET_NULL)
+    text=MDTextField()
     date_added=models.DateTimeField(auto_now=True)

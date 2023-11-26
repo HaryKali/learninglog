@@ -20,8 +20,20 @@
                 There are no entries for this topic yet.
             </li>
         {% endfor %}
+    {% for entry_md in entries_md %}
+            <li>
+                <p>{{ entry_md.date_added|date:'M d, Y H:i' }}</p>
+                <p>{{ entry_md.text|linebreaks }}</p>
+         {% empty %}
+            <li>
+                There are no entries(markdown type) for this topic yet.
+
+            </li>
+    {% endfor %}
         <p>
             <a href="{% url 'new_entry' topic.id %}">add new entry</a>
+            <a href="{% url 'new_entrymd' topic.id %}">add new entry(markdown_type)</a>
+
         </p>
     </ul>
 {% endblock content %}

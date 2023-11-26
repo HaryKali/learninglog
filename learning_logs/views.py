@@ -1,9 +1,8 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.shortcuts import render
-from .models import Topic,Entry
-from .forms import TopicForm,EntryForm
+from .models import Topic,Entry,Entry_md
+from .forms import TopicForm,EntryForm,EntryFormmd
 from django.urls import reverse
 from django.http import HttpResponseRedirect,Http404
 from django.shortcuts import render, get_object_or_404
@@ -22,7 +21,8 @@ def topic(request,topic_id):
     if topic.owner != request.user:
         raise Http404
     entries=topic.entry_set.order_by("-date_added")
-    context ={"topic":topic,"entries":entries}
+    entries_md=topic.entry_md_set.order_by("-date_added")
+    context ={"topic":topic,"entries":entries,"entries_md":entries_md}
     return  render(request, "../templates/learning_logs/topic.html", context)
 @login_required
 def new_topic(request):
@@ -53,6 +53,29 @@ def new_entry(request,topic_id):
             return HttpResponseRedirect(reverse("topic",args=[topic_id]))
     context={"topic":topic,"form":form}
     return render(request, "../templates/learning_logs/new_entry.html", context)
+
+@login_required
+def new_entrymd(request,topic_id):
+    """
+    markdown形式的博文
+    :param request:
+    :param topic_id:
+    :return: 
+    """
+    topic=Topic.objects.get(id=topic_id)
+    if topic.owner != request.user:
+        raise Http404
+    if request.method!="POST":
+        form=TopicForm()
+    else:
+        form=EntryFormmd(request.POST)
+        if form.is_valid():
+            new_entrymd=form.save(commit=False)
+            new_entrymd.topic=topic
+            new_entrymd.save()
+            return HttpResponseRedirect(reverse("topic",args=[topic_id]))
+    context={"topic":topic,"form":form}
+    return render(request, "../templates/learning_logs/new_entrymd.html", context)
 @login_required
 def edit_entry(request,entry_id):
     entry=Entry.objects.get(id=entry_id)
@@ -74,7 +97,6 @@ def edit_entry(request,entry_id):
 @login_required
 def edit_topic(request,topic_id):
     topic=Topic.objects.get(id=topic_id)
-    # entries=Entry.objects.filter(topic_id==topic_id)
     if topic.owner != request.user:
         raise Http404
     if request.method!="POST":
@@ -99,8 +121,9 @@ def delete_topic(request,topic_id):
     topic=get_object_or_404(Topic,pk=topic_id)
     if request.method == "POST":
         entries=Entry.objects.filter(topic_id=topic_id)
-        #删除Topic后默认将用户的信息放置与未分类一段
+        #删除Topic后默认将用户的信息放置与未分类中
         if Topic.objects.filter(text="未分类").exists()==False:
+            #如果没有未分类的topic，新建一个
             un_ca=Topic.objects.create(text="未分类",owner=topic.owner,owner_id=topic.owner_id)
             un_ca.save()
         for entry in entries:

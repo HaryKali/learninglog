@@ -1,0 +1,15 @@
+{% extends "learning_logs/base.html" %}
+{% block content %}
+
+    <p>Add a new entry:mark_down:</p>
+    <body>
+    <form action="{% url 'new_entrymd' topic.id %}" method='post'>
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.as_p }}
+        <button name='submit'>
+            add entry md
+        </button>
+    </form>
+    </body>>
+{% endblock content %}
